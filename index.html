@@ -1,0 +1,573 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>NotionClub — Master Your Productivity</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Bebas+Neue&family=DM+Sans:wght@300;400;500;700&display=swap" rel="stylesheet"/>
+<style>
+  :root {
+    --black: #0a0a0a;
+    --white: #f5f2ee;
+    --pink: #ff3864;
+    --yellow: #f5d000;
+    --green: #2ecc71;
+    --blue: #3b82f6;
+    --gray: #1a1a1a;
+    --text-muted: #888;
+    --border: 3px solid var(--black);
+    --shadow: 5px 5px 0 var(--black);
+    --shadow-lg: 8px 8px 0 var(--black);
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--white);
+    color: var(--black);
+    overflow-x: hidden;
+  }
+
+  /* ─── NAV ─── */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0 5%;
+    height: 60px;
+    background: var(--white);
+    border-bottom: 2px solid var(--black);
+    transition: box-shadow .3s;
+  }
+  nav.scrolled { box-shadow: 0 4px 20px rgba(0,0,0,.1); }
+  .nav-logo { font-family: 'Bebas Neue', sans-serif; font-size: 1.8rem; letter-spacing: 2px; }
+  .nav-logo span { color: var(--pink); }
+  .nav-links { display: flex; gap: 2rem; align-items: center; }
+  .nav-links a { text-decoration: none; color: var(--black); font-weight: 500; font-size: .9rem; letter-spacing: .5px; position: relative; }
+  .nav-links a::after { content: ''; position: absolute; bottom:-2px; left:0; width:0; height:2px; background:var(--pink); transition: width .3s; }
+  .nav-links a:hover::after { width: 100%; }
+  .nav-register {
+    background: var(--pink); color: #fff; border: var(--border);
+    padding: .45rem 1.2rem; font-weight: 700; font-size: .85rem;
+    letter-spacing: 1px; text-transform: uppercase; cursor: pointer;
+    box-shadow: var(--shadow); transition: transform .15s, box-shadow .15s;
+    text-decoration: none;
+  }
+  .nav-register:hover { transform: translate(-2px,-2px); box-shadow: 7px 7px 0 var(--black); }
+  .hamburger { display: none; flex-direction: column; gap: 5px; cursor: pointer; }
+  .hamburger span { display: block; width: 24px; height: 2px; background: var(--black); transition: .3s; }
+
+  /* ─── HERO ─── */
+  #hero {
+    min-height: 100vh;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    text-align: center; padding: 6rem 5% 4rem;
+    background: var(--white);
+    position: relative; overflow: hidden;
+  }
+  #hero::before {
+    content: '';
+    position: absolute; inset: 0;
+    background: repeating-linear-gradient(0deg, transparent, transparent 39px, rgba(0,0,0,.04) 40px),
+                repeating-linear-gradient(90deg, transparent, transparent 39px, rgba(0,0,0,.04) 40px);
+    pointer-events: none;
+  }
+  .hero-eyebrow {
+    font-family: 'Space Mono', monospace;
+    font-size: .75rem; letter-spacing: 4px; text-transform: uppercase;
+    color: var(--pink); margin-bottom: 1.2rem;
+    opacity: 0; animation: fadeUp .6s .2s forwards;
+  }
+  .hero-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(4rem, 12vw, 10rem);
+    line-height: .95; color: var(--black);
+    opacity: 0; animation: fadeUp .6s .35s forwards;
+  }
+  .hero-title .pink { color: var(--pink); display: block; }
+  .hero-tagline {
+    font-size: clamp(.95rem, 2vw, 1.1rem); color: #555; max-width: 500px;
+    margin: 1.5rem auto 0; line-height: 1.6;
+    opacity: 0; animation: fadeUp .6s .5s forwards;
+  }
+  .hero-banner {
+    width: 100%; max-width: 820px; margin: 2.5rem 0;
+    border: var(--border); box-shadow: var(--shadow-lg);
+    overflow: hidden; aspect-ratio: 16/7;
+    background: linear-gradient(135deg, #ff3864 0%, #ff6b35 50%, #f5d000 100%);
+    display: flex; align-items: center; justify-content: center;
+    opacity: 0; animation: fadeUp .6s .65s forwards;
+    position: relative;
+  }
+  .hero-banner-inner {
+    text-align: center; color: #fff; padding: 2rem;
+  }
+  .hero-banner-inner h2 {
+    font-family: 'Bebas Neue', sans-serif; font-size: clamp(2rem, 6vw, 5rem);
+    letter-spacing: 4px; text-shadow: 3px 3px 0 rgba(0,0,0,.3);
+  }
+  .hero-banner-inner p { font-size: 1rem; margin-top: .5rem; opacity: .9; }
+  .hero-cta {
+    display: flex; gap: 1rem; flex-wrap: wrap; justify-content: center;
+    opacity: 0; animation: fadeUp .6s .8s forwards;
+  }
+  .btn {
+    padding: .8rem 2rem; border: var(--border); font-weight: 700;
+    font-size: .9rem; letter-spacing: 1.5px; text-transform: uppercase;
+    cursor: pointer; transition: transform .15s, box-shadow .15s;
+    box-shadow: var(--shadow); text-decoration: none; display: inline-block;
+  }
+  .btn:hover { transform: translate(-3px,-3px); box-shadow: 8px 8px 0 var(--black); }
+  .btn-primary { background: var(--pink); color: #fff; }
+  .btn-secondary { background: var(--yellow); color: var(--black); }
+
+  /* ─── SECTION COMMON ─── */
+  section { padding: 5rem 5%; }
+  .section-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(2.5rem, 6vw, 5rem);
+    text-align: center; margin-bottom: 3rem; line-height: 1;
+  }
+  .section-title .accent { color: var(--pink); }
+
+  /* ─── COUNTDOWN ─── */
+  #countdown {
+    background: var(--white);
+    border-top: var(--border); border-bottom: var(--border);
+  }
+  .countdown-label {
+    font-family: 'Space Mono', monospace;
+    font-size: .7rem; letter-spacing: 4px; text-transform: uppercase;
+    color: var(--pink); text-align: center; margin-bottom: 1.5rem;
+  }
+  .countdown-grid {
+    display: flex; justify-content: center; gap: 1.5rem; flex-wrap: wrap;
+    margin-bottom: 2.5rem;
+  }
+  .countdown-box {
+    width: 130px; aspect-ratio: 1;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    border: var(--border); box-shadow: var(--shadow-lg);
+    font-family: 'Bebas Neue', sans-serif;
+    transition: transform .1s;
+  }
+  .countdown-box:hover { transform: translate(-2px,-2px); }
+  .countdown-box:nth-child(1) { background: var(--yellow); }
+  .countdown-box:nth-child(2) { background: var(--green); }
+  .countdown-box:nth-child(3) { background: var(--pink); color: #fff; }
+  .countdown-box:nth-child(4) { background: var(--blue); color: #fff; }
+  .countdown-num { font-size: 3.5rem; line-height: 1; }
+  .countdown-unit {
+    font-family: 'Space Mono', monospace; font-size: .6rem;
+    letter-spacing: 2px; text-transform: uppercase; margin-top: .2rem;
+  }
+
+  /* ─── EVENT DETAILS ─── */
+  #details { background: #fff; }
+  .details-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.2rem; max-width: 900px; margin: 0 auto; }
+  .detail-card {
+    padding: 1.8rem; border: var(--border); box-shadow: var(--shadow-lg);
+    transition: transform .15s, box-shadow .15s;
+  }
+  .detail-card:hover { transform: translate(-3px,-3px); box-shadow: 8px 8px 0 var(--black); }
+  .detail-card:nth-child(1) { background: var(--yellow); }
+  .detail-card:nth-child(2) { background: var(--green); }
+  .detail-card:nth-child(3) { background: var(--pink); color: #fff; }
+  .detail-card:nth-child(4) { background: var(--blue); color: #fff; }
+  .detail-icon { font-size: 1.4rem; margin-bottom: .5rem; }
+  .detail-label {
+    font-family: 'Space Mono', monospace; font-size: .6rem;
+    letter-spacing: 3px; text-transform: uppercase; margin-bottom: .4rem; opacity: .7;
+  }
+  .detail-heading { font-family: 'Bebas Neue', sans-serif; font-size: 2rem; line-height: 1.1; }
+  .detail-body { font-size: .9rem; margin-top: .5rem; line-height: 1.6; }
+  .detail-body ul { list-style: none; }
+  .detail-body ul li::before { content: '• '; }
+
+  /* ─── SPEAKERS ─── */
+  #speakers { background: var(--white); }
+  .speakers-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; max-width: 950px; margin: 0 auto; }
+  .speaker-card {
+    border: var(--border); box-shadow: var(--shadow-lg);
+    overflow: hidden; background: #fff;
+    transition: transform .2s, box-shadow .2s;
+  }
+  .speaker-card:hover { transform: translate(-4px,-4px); box-shadow: 9px 9px 0 var(--black); }
+  .speaker-photo {
+    width: 100%; aspect-ratio: 3/3.5;
+    background: #ccc;
+    display: flex; align-items: center; justify-content: center;
+    position: relative; overflow: hidden;
+  }
+  .speaker-photo .initials {
+    font-family: 'Bebas Neue', sans-serif; font-size: 5rem;
+    color: rgba(255,255,255,.9); z-index: 1;
+  }
+  .speaker-photo.s1 { background: linear-gradient(135deg, #2d2d2d 0%, #555 100%); }
+  .speaker-photo.s2 { background: linear-gradient(135deg, #1a1a2e 0%, #444 100%); }
+  .speaker-photo.s3 { background: linear-gradient(135deg, #2d1b1b 0%, #553333 100%); }
+  .speaker-info { padding: 1.2rem; }
+  .speaker-name { font-family: 'Bebas Neue', sans-serif; font-size: 1.6rem; }
+  .speaker-role {
+    font-family: 'Space Mono', monospace; font-size: .6rem;
+    letter-spacing: 3px; text-transform: uppercase; color: var(--pink);
+    margin: .2rem 0 .5rem;
+  }
+  .speaker-bio { font-size: .85rem; color: #555; line-height: 1.5; }
+
+  /* ─── FAQ ─── */
+  #faq { background: #fff; }
+  .faq-list { max-width: 760px; margin: 0 auto; display: flex; flex-direction: column; gap: .8rem; }
+  .faq-item { border: var(--border); box-shadow: var(--shadow); overflow: hidden; }
+  .faq-question {
+    width: 100%; display: flex; justify-content: space-between; align-items: center;
+    padding: 1.2rem 1.5rem; background: #fff; border: none; cursor: pointer;
+    font-family: 'DM Sans', sans-serif; font-weight: 700; font-size: 1rem;
+    text-align: left; transition: background .2s;
+  }
+  .faq-question:hover { background: var(--white); }
+  .faq-icon {
+    width: 28px; height: 28px; flex-shrink: 0;
+    border: 2px solid var(--black); display: flex; align-items: center; justify-content: center;
+    font-size: 1.2rem; font-weight: 300; transition: transform .3s, background .3s;
+  }
+  .faq-item.open .faq-icon { transform: rotate(45deg); background: var(--pink); color: #fff; border-color: var(--pink); }
+  .faq-answer {
+    max-height: 0; overflow: hidden; transition: max-height .4s ease, padding .3s;
+    background: var(--white); font-size: .9rem; line-height: 1.7; color: #444;
+    padding: 0 1.5rem;
+  }
+  .faq-item.open .faq-answer { max-height: 300px; padding: 1rem 1.5rem; }
+
+  /* ─── MARQUEE FOOTER BANNER ─── */
+  #cta-banner {
+    background: var(--black); padding: 3rem 0;
+    overflow: hidden; position: relative;
+  }
+  .marquee-wrapper { display: flex; overflow: hidden; }
+  .marquee-track {
+    display: flex; gap: 2rem; align-items: center;
+    animation: marquee 18s linear infinite; white-space: nowrap;
+  }
+  .marquee-track:nth-child(2) { animation-direction: reverse; }
+  .marquee-item {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(2.5rem, 6vw, 5rem);
+    letter-spacing: 3px;
+  }
+  .marquee-item:nth-child(3n+1) { color: var(--green); }
+  .marquee-item:nth-child(3n+2) { color: var(--yellow); }
+  .marquee-item:nth-child(3n+3) { color: var(--pink); }
+  .marquee-dot { color: #fff; font-size: 1rem; }
+  .cta-center { text-align: center; margin-top: 2.5rem; }
+  .cta-center .btn { background: var(--yellow); color: var(--black); font-size: 1rem; padding: 1rem 3rem; }
+  .footer-copy {
+    text-align: center; margin-top: 2rem;
+    font-family: 'Space Mono', monospace; font-size: .7rem;
+    letter-spacing: 2px; color: #555;
+  }
+
+  /* ─── ANIMATIONS ─── */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(30px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes marquee {
+    from { transform: translateX(0); }
+    to   { transform: translateX(-50%); }
+  }
+  .reveal {
+    opacity: 0; transform: translateY(40px);
+    transition: opacity .6s, transform .6s;
+  }
+  .reveal.visible { opacity: 1; transform: none; }
+
+  /* ─── RESPONSIVE ─── */
+  @media (max-width: 768px) {
+    .nav-links { display: none; position: absolute; top: 60px; left: 0; right: 0; background: var(--white); flex-direction: column; padding: 1.5rem; border-bottom: var(--border); gap: 1rem; }
+    .nav-links.open { display: flex; }
+    .hamburger { display: flex; }
+    .details-grid { grid-template-columns: 1fr; }
+    .speakers-grid { grid-template-columns: 1fr; max-width: 360px; }
+    .countdown-box { width: 80px; }
+    .countdown-num { font-size: 2.5rem; }
+  }
+  @media (max-width: 500px) {
+    .countdown-box { width: 70px; }
+    .countdown-grid { gap: .8rem; }
+  }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav id="navbar">
+  <div class="nav-logo">NOTION<span>CLUB</span></div>
+  <div class="nav-links" id="navLinks">
+    <a href="#details">Details</a>
+    <a href="#speakers">Speakers</a>
+    <a href="#faq">FAQ</a>
+    <a href="#register" class="nav-register">Register</a>
+  </div>
+  <div class="hamburger" id="hamburger">
+    <span></span><span></span><span></span>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section id="hero">
+  <p class="hero-eyebrow">— The Ultimate Productivity Workshop —</p>
+  <h1 class="hero-title">
+    MASTER YOUR
+    <span class="pink">PRODUCTIVITY</span>
+  </h1>
+  <p class="hero-tagline">Join the ultimate Notion Club workshop and transform the way you work. Limited to 100 seats.</p>
+
+  <div class="hero-banner reveal">
+    <div class="hero-banner-inner">
+      <h2>NOTION CLUB WORKSHOP 2026</h2>
+      <p>📅 February 15, 2026 &nbsp;·&nbsp; 10:00 AM – 4:00 PM EST &nbsp;·&nbsp; Online via Zoom</p>
+    </div>
+  </div>
+
+  <div class="hero-cta">
+    <a href="#register" class="btn btn-primary">Register Now</a>
+    <a href="#details" class="btn btn-secondary">Learn More</a>
+  </div>
+</section>
+
+<!-- COUNTDOWN -->
+<section id="countdown">
+  <p class="countdown-label">Event Starts In</p>
+  <div class="countdown-grid">
+    <div class="countdown-box reveal">
+      <span class="countdown-num" id="days">00</span>
+      <span class="countdown-unit">Days</span>
+    </div>
+    <div class="countdown-box reveal">
+      <span class="countdown-num" id="hours">00</span>
+      <span class="countdown-unit">Hours</span>
+    </div>
+    <div class="countdown-box reveal">
+      <span class="countdown-num" id="minutes">00</span>
+      <span class="countdown-unit">Minutes</span>
+    </div>
+    <div class="countdown-box reveal">
+      <span class="countdown-num" id="seconds">00</span>
+      <span class="countdown-unit">Seconds</span>
+    </div>
+  </div>
+  <div style="text-align:center">
+    <a href="#register" class="btn btn-primary">Register Now</a>
+  </div>
+</section>
+
+<!-- EVENT DETAILS -->
+<section id="details">
+  <h2 class="section-title reveal">EVENT <span class="accent">DETAILS</span></h2>
+  <div class="details-grid">
+    <div class="detail-card reveal">
+      <div class="detail-icon">📅</div>
+      <div class="detail-label">Date &amp; Time</div>
+      <div class="detail-heading">February 15, 2026</div>
+      <div class="detail-body">10:00 AM – 4:00 PM EST</div>
+    </div>
+    <div class="detail-card reveal">
+      <div class="detail-icon">📍</div>
+      <div class="detail-label">Platform</div>
+      <div class="detail-heading">Online Event</div>
+      <div class="detail-body">Zoom Meeting Link Provided upon registration</div>
+    </div>
+    <div class="detail-card reveal">
+      <div class="detail-icon">👥</div>
+      <div class="detail-label">Capacity</div>
+      <div class="detail-heading">Limited Seats</div>
+      <div class="detail-body">Only 100 spots available — first come, first served</div>
+    </div>
+    <div class="detail-card reveal">
+      <div class="detail-icon">✅</div>
+      <div class="detail-label">Requirements</div>
+      <div class="detail-heading">What You Need</div>
+      <div class="detail-body">
+        <ul>
+          <li>Free Notion account</li>
+          <li>Stable internet connection</li>
+          <li>Willingness to learn!</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SPEAKERS -->
+<section id="speakers">
+  <h2 class="section-title reveal">MEET THE <span class="accent">SPEAKERS</span></h2>
+  <div class="speakers-grid">
+    <div class="speaker-card reveal">
+      <div class="speaker-photo s1">
+  <img src="image1.png" alt="Sarah Chen" style="width:100%;height:100%;object-fit:cover;display:block;">
+</div>
+      <div class="speaker-info">
+        <div class="speaker-name">Sarah Chen</div>
+        <div class="speaker-role">Productivity Expert</div>
+        <div class="speaker-bio">10+ years helping teams optimize workflows and build smarter systems in Notion.</div>
+      </div>
+    </div>
+    <div class="speaker-card reveal">
+      <div class="speaker-photo s1">
+  <img src="image2.png" alt="Marcus Rodriguez" style="width:100%;height:100%;object-fit:cover;display:block;">
+</div>
+      <div class="speaker-info">
+        <div class="speaker-name">Marcus Rodriguez</div>
+        <div class="speaker-role">Notion Certified Consultant</div>
+        <div class="speaker-bio">Building scalable workspace solutions for startups and enterprise teams globally.</div>
+      </div>
+    </div>
+    <div class="speaker-card reveal">
+      <div class="speaker-photo s3">
+  <img src="image3.png" alt="Aisha Patel" style="width:100%;height:100%;object-fit:cover;display:block;">
+</div>
+      <div class="speaker-info">
+        <div class="speaker-name">Aisha Patel</div>
+        <div class="speaker-role">Community Lead</div>
+        <div class="speaker-bio">Connecting Notion enthusiasts worldwide through events, meetups, and online communities.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FAQ -->
+<section id="faq">
+  <h2 class="section-title reveal">FREQUENTLY ASKED<br><span class="accent">QUESTIONS</span></h2>
+  <div class="faq-list">
+    <div class="faq-item reveal">
+      <button class="faq-question">
+        What is the Notion Club Workshop?
+        <span class="faq-icon">+</span>
+      </button>
+      <div class="faq-answer">The Notion Club Workshop is a full-day online event where productivity experts guide you through building powerful Notion workspaces. You'll learn templates, databases, automation, and best practices through live demos and hands-on exercises.</div>
+    </div>
+    <div class="faq-item reveal">
+      <button class="faq-question">
+        Do I need prior Notion experience?
+        <span class="faq-icon">+</span>
+      </button>
+      <div class="faq-answer">No prior experience needed! The workshop is designed for all skill levels — from complete beginners to advanced users looking to supercharge their existing setup. We'll cover fundamentals and advanced features alike.</div>
+    </div>
+    <div class="faq-item reveal">
+      <button class="faq-question">
+        What will I learn?
+        <span class="faq-icon">+</span>
+      </button>
+      <div class="faq-answer">You'll learn to build personal productivity systems, team wikis, project trackers, CRMs, and automated workflows inside Notion. By the end, you'll have a fully functional workspace ready to use immediately.</div>
+    </div>
+    <div class="faq-item reveal">
+      <button class="faq-question">
+        Is there a certificate?
+        <span class="faq-icon">+</span>
+      </button>
+      <div class="faq-answer">Yes! All participants who complete the full workshop will receive a digital certificate of completion from Notion Club, which you can share on LinkedIn and other platforms.</div>
+    </div>
+    <div class="faq-item reveal">
+      <button class="faq-question">
+        How do I join the event?
+        <span class="faq-icon">+</span>
+      </button>
+      <div class="faq-answer">After registering, you'll receive a confirmation email with the Zoom link and event materials. Make sure to join 10 minutes early so we can get started on time. Recordings will be shared with all registered attendees.</div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA + FOOTER -->
+<section id="register" style="padding:0">
+  <div id="cta-banner">
+    <div class="marquee-wrapper">
+      <div class="marquee-track">
+        <span class="marquee-item">SEE YOU THERE</span>
+        <span class="marquee-dot">•</span>
+        <span class="marquee-item">SEE YOU THERE</span>
+        <span class="marquee-dot">•</span>
+        <span class="marquee-item">SEE YOU THERE</span>
+        <span class="marquee-dot">•</span>
+        <span class="marquee-item">SEE YOU THERE</span>
+        <span class="marquee-dot">•</span>
+        <span class="marquee-item">SEE YOU THERE</span>
+        <span class="marquee-dot">•</span>
+        <span class="marquee-item">SEE YOU THERE</span>
+        <span class="marquee-dot">•</span>
+        <span class="marquee-item">SEE YOU THERE</span>
+        <span class="marquee-dot">•</span>
+        <span class="marquee-item">SEE YOU THERE</span>
+        <span class="marquee-dot">•</span>
+      </div>
+    </div>
+    <div class="cta-center">
+      <a href="#" class="btn" style="background:var(--yellow);color:var(--black);font-size:1rem;padding:1rem 3rem;letter-spacing:2px;">SECURE YOUR SPOT</a>
+    </div>
+    <div class="footer-copy">
+      <p>© 2026 NOTION CLUB</p>
+      <p style="margin-top:.3rem;color:#444">Built with passion for productivity</p>
+    </div>
+  </div>
+</section>
+
+<script>
+  // ── NAV SCROLL ──
+  const navbar = document.getElementById('navbar');
+  window.addEventListener('scroll', () => {
+    navbar.classList.toggle('scrolled', window.scrollY > 20);
+  });
+
+  // ── HAMBURGER ──
+  const hamburger = document.getElementById('hamburger');
+  const navLinks = document.getElementById('navLinks');
+  hamburger.addEventListener('click', () => navLinks.classList.toggle('open'));
+  navLinks.querySelectorAll('a').forEach(a => a.addEventListener('click', () => navLinks.classList.remove('open')));
+
+  // ── COUNTDOWN ──
+  const eventDate = new Date('2026-02-15T10:00:00-05:00');
+  function pad(n) { return String(n).padStart(2, '0'); }
+  function updateCountdown() {
+    const now = new Date();
+    const diff = eventDate - now;
+    if (diff <= 0) {
+      document.getElementById('days').textContent = '00';
+      document.getElementById('hours').textContent = '00';
+      document.getElementById('minutes').textContent = '00';
+      document.getElementById('seconds').textContent = '00';
+      return;
+    }
+    document.getElementById('days').textContent    = pad(Math.floor(diff / 86400000));
+    document.getElementById('hours').textContent   = pad(Math.floor((diff % 86400000) / 3600000));
+    document.getElementById('minutes').textContent = pad(Math.floor((diff % 3600000) / 60000));
+    document.getElementById('seconds').textContent = pad(Math.floor((diff % 60000) / 1000));
+  }
+  updateCountdown();
+  setInterval(updateCountdown, 1000);
+
+  // ── SCROLL REVEAL ──
+  const revealEls = document.querySelectorAll('.reveal');
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach((entry, i) => {
+      if (entry.isIntersecting) {
+        setTimeout(() => entry.target.classList.add('visible'), i * 80);
+        observer.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.12 });
+  revealEls.forEach(el => observer.observe(el));
+
+  // ── FAQ ACCORDION ──
+  document.querySelectorAll('.faq-question').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const item = btn.parentElement;
+      const isOpen = item.classList.contains('open');
+      document.querySelectorAll('.faq-item').forEach(i => i.classList.remove('open'));
+      if (!isOpen) item.classList.add('open');
+    });
+  });
+</script>
+</body>
+</html>
